@@ -1,0 +1,47 @@
+{
+  "name": "yam-backend",
+  "version": "1.0.0",
+  "description": "yam-backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./index.js --exec babel-node -e js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AJHenry/yam-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AJHenry/yam-backend/issues"
+  },
+  "homepage": "https://github.com/AJHenry/yam-backend#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "dot-env": "0.0.1",
+    "express": "^4.16.4",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.0.2",
+    "graphql-server-express": "^1.4.0",
+    "graphql-tools": "^4.0.3",
+    "mongoose": "^5.4.0",
+    "pg-promise": "^8.5.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "husky": "^1.2.1",
+    "lint-staged": "^8.1.0",
+    "prettier": "^1.15.3",
+    "pretty-quick": "^1.8.0"
+  }
+}
