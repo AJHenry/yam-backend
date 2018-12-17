@@ -1,16 +1,26 @@
-//index.js
-
 require('dotenv').config();
 
+import cors from 'cors';
 import express from 'express';
-const app = express();
-const PORT = process.env.PORT;
+import { ApolloServer } from 'apollo-server-express';
+import { resolvers } from './resolvers';
+import { typeDefs } from './schemas';
+import { psql } from './config/psqlAdapter'; // our adapter from psqlAdapter.js
 
-app.get('/', (req, res) => {
-  res.json({
-    msg: 'Welcome to GraphQL',
-  });
+const server = new ApolloServer({ typeDefs, resolvers });
+
+const app = express().use('*', cors());
+server.applyMiddleware({ app });
+
+// basic health route, ping /health to determine server health
+app.get('/health', (req, res) => {
+  res.sendStatus(200);
 });
-app.listen(PORT, () => {
-  console.log(`Server is listening on PORT ${PORT}`);
+
+app.listen(process.env.PORT, () => {
+  console.log(
+    `🚀 Server ready at http://localhost:${process.env.PORT}${
+      server.graphqlPath
+    }`
+  );
 });
