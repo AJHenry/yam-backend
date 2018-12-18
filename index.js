@@ -5,7 +5,6 @@ import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { resolvers } from './resolvers';
 import { typeDefs } from './schemas';
-import { psql } from './config/psqlAdapter'; // our adapter from psqlAdapter.js
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
