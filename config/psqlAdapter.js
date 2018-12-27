@@ -2,23 +2,29 @@ require('dotenv').config();
 
 import pgPromise from 'pg-promise';
 
-//const connStr = `postgresql://${process.env.DATABASE_USER}@${process.env.DATABASE_HOST}:port/database`; // add your psql details
+const {
+  DATABASE_HOST,
+  DATABASE_NAME,
+  DATABASE_PASSWORD,
+  DATABASE_PORT,
+  DATABASE_USER,
+} = process.env;
 
 console.log(`Establishing connection to Postgres with the following settings:
-  host: ${process.env.DATABASE_HOST},
-  port: ${process.env.DATABASE_PORT},
-  database: ${process.env.DATABASE_NAME},
-  user: ${process.env.DATABASE_USER},
-  password: ${process.env.DATABASE_PASSWORD},
-If these do not look right, they probably aren't, check it the .env file
+  host: ${DATABASE_HOST},
+  port: ${DATABASE_PORT},
+  database: ${DATABASE_NAME},
+  user: ${DATABASE_USER},
+  password: ${DATABASE_PASSWORD},
+If these do not look right, they probably aren't, check the .env file
 `);
 
 const cn = {
-  host: process.env.DATABASE_HOST,
-  port: process.env.DATABASE_PORT,
-  database: process.env.DATABASE_NAME,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
+  host: DATABASE_HOST,
+  port: DATABASE_PORT,
+  database: DATABASE_NAME,
+  user: DATABASE_USER,
+  password: DATABASE_PASSWORD,
 };
 
 const pgp = pgPromise({}); // empty pgPromise instance
