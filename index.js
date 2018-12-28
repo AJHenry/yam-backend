@@ -104,15 +104,18 @@ app.post('/auth', async (req, res) => {
   // Check just in case creating a user failed for some reason
   const userJWT = user ? jwt.sign(user, JWT_SECRET) : null;
 
+  console.log(user);
   // Return status based on success of jwt signing
   if (userJWT) {
     res.status(200).json({
       token: userJWT,
+      username: user.username,
       message: 'Successfully generated JWT for given device ID',
     });
   } else {
     res.status(500).json({
       token: userJWT,
+      username: null,
       message: 'Error generating JWT for given device ID',
     });
   }

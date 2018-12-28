@@ -43,4 +43,4 @@ psql
     console.log(`Failed to connect to DB: with err: ${err}`);
   });
 
-export { psql };
+export { psql, pgp };

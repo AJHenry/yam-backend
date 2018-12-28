@@ -4,11 +4,11 @@
  * 12/27/18
  */
 
-import { psql as db } from '../config/psqlAdapter';
+import { psql as db, pgp } from '../config/psqlAdapter';
 
 const findUserByDeviceId = deviceId => {
   const findUserByDeviceId =
-    'select account_id, device_id from account_info where device_id = $(deviceId)';
+    'select account_id, device_id, username from account_info where device_id = $(deviceId)';
   return db
     .oneOrNone(findUserByDeviceId, { deviceId })
     .then(res => {
@@ -24,7 +24,7 @@ const findUserByDeviceId = deviceId => {
 
 const findUserByAccountId = accountId => {
   const findUserByAccountId =
-    'select account_id, device_id from account_info where account_id = $(accountId)';
+    'select account_id, device_id, username from account_info where account_id = $(accountId)';
   return db
     .oneOrNone(findUserByAccountId, { accountId })
     .then(res => {
@@ -41,17 +41,21 @@ const findUserByAccountId = accountId => {
 const createUser = deviceId => {
   const username = `randomname${Math.round(Math.random() * 100000)}`;
   console.log(`username:${username}`);
-  const createAccount =
-    'insert into account_info(current_username, device_id) values($(username), $(deviceId)) returning account_id, device_id';
+
   return db
-    .one(createAccount, { username, deviceId })
+    .func('create_account', { username, deviceId })
     .then(res => {
-      return res;
+      console.log(res);
+      const accountId = res[0].create_account;
+
+      if (accountId != -1) {
+        return findUserByAccountId(accountId);
+      } else {
+        return null;
+      }
     })
     .catch(err => {
-      console.log(
-        `Error creating account for deviceId:${deviceId} with err:${err}`
-      );
+      console.log(`Error inserting account with err: ${err}`);
       return null;
     });
 };
