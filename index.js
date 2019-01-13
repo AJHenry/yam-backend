@@ -34,7 +34,7 @@ const strategy = new Strategy(params, async (payload, done) => {
 passport.use(strategy);
 
 // Initializing passport, express
-const app = express().use('*', cors());
+const app = express().use(cors());
 passport.initialize();
 
 // Endpoint for checking jwt auth
@@ -109,13 +109,13 @@ app.post('/auth', async (req, res) => {
   if (userJWT) {
     res.status(200).json({
       token: userJWT,
-      username: user.username,
+      user_data: user,
       message: 'Successfully generated JWT for given device ID',
     });
   } else {
     res.status(500).json({
       token: userJWT,
-      username: null,
+      user_data: null,
       message: 'Error generating JWT for given device ID',
     });
   }

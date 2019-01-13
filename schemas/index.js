@@ -3,38 +3,58 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 
 // Main schema to export
 export const typeDefs = gql`
+  scalar Date
+
+  type Post {
+    post_id: Int!
+    post_type: String!
+    content_title: String
+    content_body: String
+    parent_id: Int
+    author_id: Int!
+    current_author_name: String
+    current_author_image: String
+    post_date: Date!
+    post_score: Int!
+    location: GeoPosition
+    comments: [Post]
+  }
+
+  type Resource {
+    resource_id: Int!
+    post_id: Int!
+    resource_type: String!
+    resource_url: String!
+  }
+
+  type GeoPosition {
+    latitude: Float!
+    longitude: Float!
+  }
+
+  input GeoPositionInput {
+    latitude: Float!
+    longitude: Float!
+  }
+
   type Query {
     databaseStatus: String
-    posts: [Post]
+    selectAllPosts: [Post]
+    getFeed(
+      location: GeoPositionInput!
+      offset: Int!
+      offset: Int!
+      time: Date
+    ): [Post]
   }
 
   type Mutation {
     post(
-      PostType: String!
-      ContentText: String!
-      ContentType: String!
-      VideoUrl: String
-      ImageUrl: String
-      OtherUrl: String
-      ParentId: Int
-      AuthorId: Int!
+      post_type: String!
+      content_title: String
+      content_body: String
+      parent_id: Int
+      location: GeoPositionInput
     ): Post!
-  }
-
-  scalar Date
-
-  type Post {
-    id: Int!
-    posttype: String!
-    contenttext: String!
-    contenttype: String!
-    videourl: String
-    imageurl: String
-    otherurl: String
-    parentid: Int
-    authorid: Int!
-    currentauthorname: String!
-    currentauthorimage: String
-    postdate: Date!
   }
 `;

@@ -4,7 +4,13 @@
  * 12/27/18
  */
 
-import { selectAllPosts, createPost } from './post';
+import {
+  selectAllPosts,
+  createPost,
+  selectPostById,
+  selectCoordsByPostId,
+  selectCommentsByParentId,
+} from './post';
 import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
 
@@ -15,4 +21,7 @@ export {
   findUserByDeviceId,
   findUserByAccountId,
   createUser,
+  selectPostById,
+  selectCoordsByPostId,
+  selectCommentsByParentId,
 };

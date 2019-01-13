@@ -1,22 +1,43 @@
 import { GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
-import { databaseTest, createPost, selectAllPosts } from '../database-actions';
+import {
+  databaseTest,
+  createPost,
+  selectAllPosts,
+  selectCoordsByPostId,
+} from '../database-actions';
 
 export const resolvers = {
   Query: {
     databaseStatus: () => {
-      console.log('Got here');
+      console.log(`Query:databaseStatus`);
       return databaseTest();
     },
-    posts: () => {
-      console.log(`Resolver: posts`);
+    selectAllPosts: () => {
+      console.log(`Query:selectAllPosts`);
       return selectAllPosts();
+    },
+    getFeed: (obj, args, context, info) => {
+      const { user } = context;
     },
   },
   Mutation: {
     post: (obj, args, context, info) => {
-      console.log(`Called mutation with args ${args}`);
-      return createPost(args);
+      console.log(`Mutation:post (args: ${args})`);
+      const { user } = context;
+      return createPost(args, user);
+    },
+  },
+  Post: {
+    location: post => {
+      return selectCoordsByPostId(post.post_id);
+    },
+    comments: post => {
+      if (!post.parent_id) {
+        return selectCommentsByParentId(post.post_id);
+      } else {
+        return null;
+      }
     },
   },
   Date: new GraphQLScalarType({
