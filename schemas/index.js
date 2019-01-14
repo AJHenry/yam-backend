@@ -40,7 +40,7 @@ export const typeDefs = gql`
 
   type Query {
     databaseStatus: String
-    selectAllPosts: [Post]
+    selectAllPosts: [Post]!
     selectPost(post_id: Int!): Post
     getFeed(
       location: GeoPositionInput!
