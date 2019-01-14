@@ -44,8 +44,10 @@ export const typeDefs = gql`
     selectPost(post_id: Int!): Post
     getFeed(
       location: GeoPositionInput!
-      offset: Int!
-      offset: Int!
+      radius: Float
+      start: Int
+      offset: Int
+      count: Int
       time: Date
     ): [Post]!
   }
