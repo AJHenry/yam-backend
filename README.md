@@ -18,6 +18,19 @@ This is the repo for the backend that serves the mobile application Yam.
 
 First and foremost, **you must have Node/npm installed and the database up and running**
 
+These are the variables you need in your `env` file
+
+```env
+PORT
+JWT_SECRET
+
+DATABASE_HOST
+DATABASE_NAME
+DATABASE_PASSWORD
+DATABASE_PORT
+DATABASE_USER
+```
+
 ```sh
 npm start
 ```
@@ -45,7 +58,7 @@ Body
 }
 ```
 
-Where device_id is the _unique_ device ID of the client
+Where device*id is the \_unique* device ID of the client
 
 This will in return a JWT
 
