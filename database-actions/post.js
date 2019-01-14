@@ -49,7 +49,7 @@ const createPost = (args, user) => {
         })
         .then(res => {
           console.log(`Successfully inserted post with coords`);
-          return selectPostById(postId);
+          return selectPostById(postId, authorId);
         })
         .catch(err => {
           console.log(`Error inserting post coords for postId: ${postId}`);
@@ -66,7 +66,7 @@ const createPost = (args, user) => {
 
 // Returns all posts, dangerous!
 const selectAllPosts = () => {
-  const testQuery = `select * from Post`;
+  const testQuery = `select * from post`;
   return db
     .any(testQuery)
     .then(res => {
@@ -80,11 +80,14 @@ const selectAllPosts = () => {
 };
 
 // Selects 1 post by its ID
-const selectPostById = postId => {
+const selectPostById = (postId, voterId) => {
   console.log(`db:selectPostById`);
-  const testQuery = `select * from post where post_id = $(postId)`;
+  const testQuery = `select p.*, v.vote_type from post p
+                    left join (select * from vote where account_id = $(voterId)) v
+                    on p.post_id = v.post_id
+                    where p.post_id = $(postId)`;
   return db
-    .one(testQuery, { postId })
+    .one(testQuery, { postId, voterId })
     .then(res => {
       console.log(res);
       return res;
@@ -157,7 +160,7 @@ const updateScore = (postId, voteType, accountId) => {
     .one(testQuery, { postId, voteType, accountId })
     .then(res => {
       const postId = res.post_id;
-      return selectPostById(postId);
+      return selectPostById(postId, accountId);
     })
     .catch(error => {
       console.log('ERROR:', error); // print error;

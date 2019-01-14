@@ -16,6 +16,7 @@ export const typeDefs = gql`
     current_author_image: String
     post_date: Date!
     post_score: Int!
+    vote_type: String
     location: GeoPosition
     comments: [Post]
   }

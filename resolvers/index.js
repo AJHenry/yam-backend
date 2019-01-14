@@ -22,7 +22,8 @@ export const resolvers = {
     },
     selectPost: (obj, args, context, info) => {
       const postId = args.post_id;
-      return selectPostById(postId);
+      const voterId = context.user.account_id;
+      return selectPostById(postId, voterId);
     },
     getFeed: (obj, args, context, info) => {
       const { user } = context;
