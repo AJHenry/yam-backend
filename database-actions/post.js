@@ -145,6 +145,26 @@ const deletePostById = (postId, accountId) => {
     });
 };
 
+// Updates a score for a given post
+const updateScore = (postId, voteType, accountId) => {
+  console.log(`db:updateScore`);
+  const testQuery = `insert into vote(post_id, vote_type, account_id)
+                    values($(postId), $(voteType), $(accountId)) 
+                    ON CONFLICT (post_id, account_id) DO UPDATE 
+                    SET vote_type = excluded.vote_type
+                    returning post_id`;
+  return db
+    .one(testQuery, { postId, voteType, accountId })
+    .then(res => {
+      const postId = res.post_id;
+      return selectPostById(postId);
+    })
+    .catch(error => {
+      console.log('ERROR:', error); // print error;
+      return null;
+    });
+};
+
 export {
   selectAllPosts,
   createPost,
@@ -152,4 +172,5 @@ export {
   selectCoordsByPostId,
   selectCommentsByParentId,
   deletePostById,
+  updateScore,
 };

@@ -5,6 +5,9 @@ import {
   createPost,
   selectAllPosts,
   selectCoordsByPostId,
+  selectCommentsByParentId,
+  selectPostById,
+  updateScore,
 } from '../database-actions';
 
 export const resolvers = {
@@ -17,6 +20,10 @@ export const resolvers = {
       console.log(`Query:selectAllPosts`);
       return selectAllPosts();
     },
+    selectPost: (obj, args, context, info) => {
+      const postId = args.post_id;
+      return selectPostById(postId);
+    },
     getFeed: (obj, args, context, info) => {
       const { user } = context;
     },
@@ -26,6 +33,13 @@ export const resolvers = {
       console.log(`Mutation:post (args: ${args})`);
       const { user } = context;
       return createPost(args, user);
+    },
+    updateScore: (obj, args, context, info) => {
+      console.log(`Mutation:updateScore (args: ${args})`);
+      const accountId = context.user.account_id;
+      const postId = args.post_id;
+      const voteType = args.vote_type;
+      return updateScore(postId, voteType, accountId);
     },
   },
   Post: {

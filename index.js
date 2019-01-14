@@ -96,10 +96,14 @@ app.post('/auth', async (req, res) => {
   // Get the user details based on device id
   let user = await findUserByDeviceId(deviceId);
 
+  console.log(`User found: ${user}`);
+
   // if user is null, we need to create a new user
   if (!user) {
     user = await createUser(deviceId);
   }
+
+  console.log(user);
 
   // Check just in case creating a user failed for some reason
   const userJWT = user ? jwt.sign(user, JWT_SECRET) : null;

@@ -40,12 +40,13 @@ export const typeDefs = gql`
   type Query {
     databaseStatus: String
     selectAllPosts: [Post]
+    selectPost(post_id: Int!): Post
     getFeed(
       location: GeoPositionInput!
       offset: Int!
       offset: Int!
       time: Date
-    ): [Post]
+    ): [Post]!
   }
 
   type Mutation {
@@ -54,7 +55,8 @@ export const typeDefs = gql`
       content_title: String
       content_body: String
       parent_id: Int
-      location: GeoPositionInput
+      location: GeoPositionInput!
     ): Post!
+    updateScore(post_id: Int!, vote_type: String): Post!
   }
 `;
