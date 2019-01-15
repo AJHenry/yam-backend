@@ -36,8 +36,9 @@ const getFeed = (
                         select post_id
                         from post_coords
                         where ST_Distance_Sphere(loc_data::geometry, ST_MakePoint($(lon), $(lat))) <= $(radius) * 1609.34
-                    ) and
-                    p.post_date < to_timestamp($(timestamp))
+                    )
+                    and p.post_date < to_timestamp($(timestamp))
+                    and p.parent_id is null
                     order by p.post_date
                     offset $(offset)
                     limit $(count)

@@ -83,10 +83,7 @@ const selectAllPosts = () => {
 // Selects 1 post by its ID
 const selectPostById = (postId, voterId) => {
   console.log(`db:selectPostById`);
-  const testQuery = `select p.*, v.vote_type from post p
-                    left join (select * from vote where account_id = $(voterId)) v
-                    on p.post_id = v.post_id
-                    where p.post_id = $(postId)`;
+  const testQuery = `select * from post p where p.post_id = $(postId)`;
   return db
     .one(testQuery, { postId, voterId })
     .then(res => {
@@ -96,6 +93,25 @@ const selectPostById = (postId, voterId) => {
     .catch(error => {
       console.log('ERROR:', error); // print error;
       return -1;
+    });
+};
+
+// Returns the post vote type for a given user
+const selectVoteType = (postId, voterId) => {
+  console.log(`db:selectPostById`);
+  const testQuery = `select vote_type from vote
+                    where post_id = $(postId)
+                    and account_id = $(voterId)`;
+  return db
+    .oneOrNone(testQuery, { postId, voterId })
+    .then(res => {
+      console.log(res);
+      const voteType = res.vote_type ? res.vote_type : null;
+      return voteType;
+    })
+    .catch(error => {
+      console.log('ERROR:', error); // print error;
+      return null;
     });
 };
 
@@ -177,4 +193,5 @@ export {
   selectCommentsByParentId,
   deletePostById,
   updateScore,
+  selectVoteType,
 };

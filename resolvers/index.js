@@ -9,6 +9,7 @@ import {
   selectPostById,
   updateScore,
   getFeed,
+  selectVoteType,
 } from '../database-actions';
 
 export const resolvers = {
@@ -48,15 +49,14 @@ export const resolvers = {
     },
   },
   Post: {
+    vote_type: (post, args, context, info) => {
+      return selectVoteType(post.post_id, context.user.account_id);
+    },
     location: post => {
       return selectCoordsByPostId(post.post_id);
     },
     comments: post => {
-      if (!post.parent_id) {
-        return selectCommentsByParentId(post.post_id);
-      } else {
-        return null;
-      }
+      return selectCommentsByParentId(post.post_id);
     },
   },
   Date: new GraphQLScalarType({

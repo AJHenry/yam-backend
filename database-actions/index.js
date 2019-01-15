@@ -11,6 +11,7 @@ import {
   selectCoordsByPostId,
   selectCommentsByParentId,
   updateScore,
+  selectVoteType,
 } from './post';
 import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
@@ -28,4 +29,5 @@ export {
   selectCommentsByParentId,
   updateScore,
   getFeed,
+  selectVoteType,
 };
