@@ -40,15 +40,14 @@ export const typeDefs = gql`
 
   type Query {
     databaseStatus: String
-    selectAllPosts: [Post]!
-    selectPost(post_id: Int!): Post
-    getFeed(
+    allPosts: [Post]!
+    post(post_id: Int!): Post
+    feed(
       location: GeoPositionInput!
       radius: Float
-      start: Int
       offset: Int
       count: Int
-      time: Date
+      timestamp: Date
     ): [Post]!
   }
 
@@ -60,6 +59,6 @@ export const typeDefs = gql`
       parent_id: Int
       location: GeoPositionInput!
     ): Post!
-    updateScore(post_id: Int!, vote_type: String): Post!
+    vote(post_id: Int!, vote_type: String): Post!
   }
 `;

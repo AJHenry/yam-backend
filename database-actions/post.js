@@ -24,8 +24,8 @@ const createPost = (args, user) => {
     return null;
   }
 
-  const testQuery = `insert into Post(post_type, content_title, content_body, parent_id, author_id) 
-                    values($(postType), $(contentTitle), $(contentBody), $(parentId), $(authorId)) returning post_id`;
+  const testQuery = `insert into Post(post_type, content_title, content_body, parent_id, author_id, post_date)
+                    values($(postType), $(contentTitle), $(contentBody), $(parentId), $(authorId), to_timestamp($(postDate))) returning post_id`;
 
   return db
     .one(testQuery, {
@@ -34,6 +34,7 @@ const createPost = (args, user) => {
       contentBody,
       parentId,
       authorId,
+      postDate: Date.now() / 1000,
     })
     .then(data => {
       const postId = data.post_id;

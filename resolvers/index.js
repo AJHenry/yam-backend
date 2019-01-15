@@ -8,6 +8,7 @@ import {
   selectCommentsByParentId,
   selectPostById,
   updateScore,
+  getFeed,
 } from '../database-actions';
 
 export const resolvers = {
@@ -16,17 +17,20 @@ export const resolvers = {
       console.log(`Query:databaseStatus`);
       return databaseTest();
     },
-    selectAllPosts: () => {
+    allPosts: () => {
       console.log(`Query:selectAllPosts`);
       return selectAllPosts();
     },
-    selectPost: (obj, args, context, info) => {
+    post: (obj, args, context, info) => {
       const postId = args.post_id;
       const voterId = context.user.account_id;
       return selectPostById(postId, voterId);
     },
-    getFeed: (obj, args, context, info) => {
+    feed: (obj, args, context, info) => {
       const { user } = context;
+      const { location, radius, offset, count, timestamp } = args;
+
+      return getFeed(location, radius, offset, count, timestamp, user);
     },
   },
   Mutation: {
@@ -35,7 +39,7 @@ export const resolvers = {
       const { user } = context;
       return createPost(args, user);
     },
-    updateScore: (obj, args, context, info) => {
+    vote: (obj, args, context, info) => {
       console.log(`Mutation:updateScore (args: ${args})`);
       const accountId = context.user.account_id;
       const postId = args.post_id;
@@ -59,12 +63,15 @@ export const resolvers = {
     name: 'Date',
     description: 'Date custom scalar type',
     parseValue(value) {
+      console.log(`parseValue`);
       return new Date(value); // value from the client
     },
     serialize(value) {
+      console.log(`serialize`);
       return value.getTime(); // value sent to the client
     },
     parseLiteral(ast) {
+      console.log(`parseLiteral`);
       if (ast.kind === Kind.INT) {
         return parseInt(ast.value, 10); // ast value is always in string format
       }

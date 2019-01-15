@@ -14,6 +14,7 @@ import {
 } from './post';
 import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
+import { getFeed } from './feed';
 
 export {
   databaseTest,
@@ -26,4 +27,5 @@ export {
   selectCoordsByPostId,
   selectCommentsByParentId,
   updateScore,
+  getFeed,
 };
