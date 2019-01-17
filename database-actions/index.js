@@ -12,6 +12,7 @@ import {
   selectCommentsByParentId,
   updateScore,
   selectVoteType,
+  selectCommentCount,
 } from './post';
 import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
@@ -30,4 +31,5 @@ export {
   updateScore,
   getFeed,
   selectVoteType,
+  selectCommentCount,
 };

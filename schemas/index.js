@@ -19,6 +19,7 @@ export const typeDefs = gql`
     vote_type: String
     location: GeoPosition
     comments: [Post]
+    comment_count: Int
   }
 
   type Resource {

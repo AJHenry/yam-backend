@@ -71,7 +71,7 @@ const selectAllPosts = () => {
   return db
     .any(testQuery)
     .then(res => {
-      console.log(res); // print new user id;
+      //console.log(res); // print new user id;
       return res;
     })
     .catch(error => {
@@ -87,7 +87,7 @@ const selectPostById = (postId, voterId) => {
   return db
     .one(testQuery, { postId, voterId })
     .then(res => {
-      console.log(res);
+      //console.log(res);
       return res;
     })
     .catch(error => {
@@ -105,7 +105,7 @@ const selectVoteType = (postId, voterId) => {
   return db
     .oneOrNone(testQuery, { postId, voterId })
     .then(res => {
-      console.log(res);
+      //console.log(res);
       const voteType = res.vote_type ? res.vote_type : null;
       return voteType;
     })
@@ -124,7 +124,7 @@ const selectCoordsByPostId = postId => {
   return db
     .oneOrNone(testQuery, { postId })
     .then(res => {
-      console.log(res);
+      //console.log(res);
       return res;
     })
     .catch(error => {
@@ -140,8 +140,24 @@ const selectCommentsByParentId = parentId => {
   return db
     .any(testQuery, { parentId })
     .then(res => {
-      console.log(res);
+      //console.log(res);
       return res;
+    })
+    .catch(error => {
+      console.log('ERROR:', error); // print error;
+      return null;
+    });
+};
+
+// Gets comments for a given post, with its parent ID
+const selectCommentCount = parentId => {
+  console.log(`db:selectCommentCount`);
+  const testQuery = `select count(post_id) as comment_count from post where parent_id = $(parentId)`;
+  return db
+    .one(testQuery, { parentId })
+    .then(res => {
+      //console.log(res);
+      return res.comment_count;
     })
     .catch(error => {
       console.log('ERROR:', error); // print error;
@@ -156,7 +172,7 @@ const deletePostById = (postId, accountId) => {
   return db
     .none(testQuery, { postId, authorId: accountId })
     .then(res => {
-      console.log(res);
+      //console.log(res);
       return res;
     })
     .catch(error => {
@@ -194,4 +210,5 @@ export {
   deletePostById,
   updateScore,
   selectVoteType,
+  selectCommentCount,
 };

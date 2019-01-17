@@ -10,6 +10,7 @@ import {
   updateScore,
   getFeed,
   selectVoteType,
+  selectCommentCount,
 } from '../database-actions';
 
 export const resolvers = {
@@ -57,6 +58,9 @@ export const resolvers = {
     },
     comments: post => {
       return selectCommentsByParentId(post.post_id);
+    },
+    comment_count: post => {
+      return selectCommentCount(post.post_id);
     },
   },
   Date: new GraphQLScalarType({
