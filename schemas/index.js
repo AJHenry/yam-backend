@@ -6,27 +6,28 @@ export const typeDefs = gql`
   scalar Date
 
   type Post {
-    post_id: Int!
-    post_type: String!
-    content_title: String
-    content_body: String
-    parent_id: Int
-    author_id: Int!
-    current_author_name: String
-    current_author_image: String
-    post_date: Date!
-    post_score: Int!
-    vote_type: String
+    postId: Int!
+    postType: String!
+    contentTitle: String
+    contentBody: String
+    parentId: Int
+    authorId: Int!
+    currentAuthorName: String
+    currentAuthorImage: String
+    postDate: Date!
+    postScore: Int!
+    voteType: String
     location: GeoPosition
     comments: [Post]
-    comment_count: Int
+    commentCount: Int
+    isOwner: Boolean!
   }
 
   type Resource {
-    resource_id: Int!
-    post_id: Int!
-    resource_type: String!
-    resource_url: String!
+    resourceId: Int!
+    postId: Int!
+    resourceType: String!
+    resourceUrl: String!
   }
 
   type GeoPosition {
@@ -37,12 +38,25 @@ export const typeDefs = gql`
   input GeoPositionInput {
     latitude: Float!
     longitude: Float!
+    altitude: Float
+  }
+
+  input AddressInput {
+    latitude: Float!
+    longitude: Float!
+    altitude: Float
+  }
+
+  input Address {
+    latitude: Float!
+    longitude: Float!
+    altitude: Float
   }
 
   type Query {
     databaseStatus: String
     allPosts: [Post]!
-    post(post_id: Int!): Post
+    post(postId: Int!): Post
     feed(
       location: GeoPositionInput!
       radius: Float
@@ -54,12 +68,12 @@ export const typeDefs = gql`
 
   type Mutation {
     post(
-      post_type: String!
-      content_title: String
-      content_body: String
-      parent_id: Int
+      postType: String!
+      contentTitle: String
+      contentBody: String
+      parentId: Int
       location: GeoPositionInput!
     ): Post!
-    vote(post_id: Int!, vote_type: String): Post!
+    vote(postId: Int!, voteType: String): Post!
   }
 `;

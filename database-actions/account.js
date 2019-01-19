@@ -8,8 +8,7 @@ import { psql as db, pgp } from '../config/psqlAdapter';
 
 const findUserByDeviceId = deviceId => {
   console.log(`db:findUserByDeviceId`);
-  const findUserByDeviceId =
-    'select account_id, device_id, username, role_type from account_info where device_id = $(deviceId)';
+  const findUserByDeviceId = `select account_id, device_id, username, role_type from account_info where device_id = $(deviceId)`;
   return db
     .oneOrNone(findUserByDeviceId, { deviceId })
     .then(res => {
@@ -25,8 +24,7 @@ const findUserByDeviceId = deviceId => {
 
 const findUserByAccountId = accountId => {
   console.log(`db:findUserByAccountId`);
-  const findUserByAccountId =
-    'select account_id, device_id, username, role_type from account_info where account_id = $(accountId)';
+  const findUserByAccountId = `select account_id, device_id, username, role_type from account_info where account_id = $(accountId)`;
   return db
     .oneOrNone(findUserByAccountId, { accountId })
     .then(res => {
@@ -48,6 +46,7 @@ const createUser = deviceId => {
   return db
     .func('create_account', { username, deviceId })
     .then(res => {
+      console.log(res);
       const accountId = res[0].create_account;
 
       if (accountId != -1) {

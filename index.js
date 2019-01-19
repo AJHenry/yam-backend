@@ -25,7 +25,7 @@ const params = {
 
 // JWT strategy for passport
 const strategy = new Strategy(params, async (payload, done) => {
-  const accountId = payload.account_id; //Fetch account id
+  const accountId = payload.accountId; //Fetch account id
   const user = await findUserByAccountId(accountId); //Find a user based on account_id
   return done(null, user);
 });
@@ -83,12 +83,12 @@ app.get('/health', (req, res) => {
 
 // Route for generating a jwt using a device id
 app.post('/auth', async (req, res) => {
-  const deviceId = req.body.device_id;
+  const deviceId = req.body.deviceId;
 
   // No device id found in the body, nothing we can do about it
   if (!deviceId) {
     res.status(400).json({
-      message: 'No device_id found in params or body',
+      message: 'No deviceId found in params or body',
     });
     return;
   }
@@ -113,13 +113,13 @@ app.post('/auth', async (req, res) => {
   if (userJWT) {
     res.status(200).json({
       token: userJWT,
-      user_data: user,
+      userData: user,
       message: 'Successfully generated JWT for given device ID',
     });
   } else {
     res.status(500).json({
       token: userJWT,
-      user_data: null,
+      userData: null,
       message: 'Error generating JWT for given device ID',
     });
   }

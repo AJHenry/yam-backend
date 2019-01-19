@@ -6,6 +6,16 @@ const DEFAULT_COUNT = 50;
 const MAX_COUNT = 200;
 const DEFAULT_OFFSET = 0;
 
+const POST_FIELDS = `post_type as postType,
+content_title as contentTitle,
+content_body as contentBody,
+parent_id as parentId,
+author_id as authorId,
+current_author_name as currentAuthorName,
+current_author_image as currentAuthorImage,
+post_date as postDate,
+post_score as postScore`;
+
 const getFeed = (
   location,
   radius = DEFAULT_RADIUS,
@@ -25,24 +35,23 @@ const getFeed = (
     return [];
   }
 
-  const voterId = userObj.account_id;
+  const voterId = userObj.accountId;
   const lon = location.longitude;
   const lat = location.latitude;
 
-  const feedQuery = `select p.*, v.vote_type from post p
-                    left join (select * from vote where account_id = $(voterId)) v
-                    on p.post_id = v.post_id
-                    where p.post_id in (
-                        select post_id
-                        from post_coords
-                        where ST_Distance_Sphere(loc_data::geometry, ST_MakePoint($(lon), $(lat))) <= $(radius) * 1609.34
-                    )
-                    and p.post_date < to_timestamp($(timestamp))
-                    and p.parent_id is null
-                    order by p.post_date
-                    offset $(offset)
-                    limit $(count)
-                    `;
+  const feedQuery = `select * from post
+  where post_id in (
+      select post_id
+      from post_coords
+      where ST_Distance_Sphere(loc_data::geometry, ST_MakePoint($(lon), $(lat))) <= $(radius) * 1609.34
+  )
+  and post_date < to_timestamp($(timestamp))
+  and parent_id is null
+  order by post_date DESC
+  offset $(offset)
+  limit $(count)
+  `;
+
   return db
     .any(feedQuery, {
       voterId,
@@ -54,8 +63,8 @@ const getFeed = (
       count,
     })
     .then(res => {
-      //console.log(res);
-      console.log(res[0].post_date);
+      console.log(res);
+      console.log(res[0].postDate);
       return res;
     })
     .catch(error => {

@@ -10,12 +10,12 @@ import { psql as db } from '../config/psqlAdapter'; // our adapter from psqlAdap
 const createPost = (args, user) => {
   console.log(`Args: ${args}`);
   console.log(`User: ${user}`);
-  const authorId = user.account_id;
-  const roleType = user.role_type;
-  const postType = args.post_type || 'post';
-  const contentTitle = args.content_title || null;
-  const contentBody = args.content_body || '';
-  const parentId = args.parent_id || null;
+  const authorId = user.accountId;
+  const roleType = user.roleType;
+  const postType = args.postType || 'post';
+  const contentTitle = args.contentTitle || null;
+  const contentBody = args.contentBody || '';
+  const parentId = args.parentId || null;
   const locationCoords = args.location || null;
 
   // Error if there's no parent and no post coords
@@ -37,7 +37,7 @@ const createPost = (args, user) => {
       postDate: Date.now() / 1000,
     })
     .then(data => {
-      const postId = data.post_id;
+      const postId = data.postId;
       const lat = locationCoords.latitude;
       const lon = locationCoords.longitude;
       const selectQuery = `insert into post_coords(post_id, loc_data)
@@ -67,7 +67,9 @@ const createPost = (args, user) => {
 
 // Returns all posts, dangerous!
 const selectAllPosts = () => {
-  const testQuery = `select * from post`;
+  const testQuery = `select ${POST_FIELDS}
+  from post`;
+
   return db
     .any(testQuery)
     .then(res => {
@@ -83,7 +85,7 @@ const selectAllPosts = () => {
 // Selects 1 post by its ID
 const selectPostById = (postId, voterId) => {
   console.log(`db:selectPostById`);
-  const testQuery = `select * from post p where p.post_id = $(postId)`;
+  const testQuery = `select * from post where post_id = $(postId)`;
   return db
     .one(testQuery, { postId, voterId })
     .then(res => {
@@ -106,7 +108,7 @@ const selectVoteType = (postId, voterId) => {
     .oneOrNone(testQuery, { postId, voterId })
     .then(res => {
       //console.log(res);
-      const voteType = res.vote_type ? res.vote_type : null;
+      const voteType = !res || !res.voteType ? null : res.voteType;
       return voteType;
     })
     .catch(error => {
@@ -157,7 +159,7 @@ const selectCommentCount = parentId => {
     .one(testQuery, { parentId })
     .then(res => {
       //console.log(res);
-      return res.comment_count;
+      return res.commentCount;
     })
     .catch(error => {
       console.log('ERROR:', error); // print error;
@@ -192,7 +194,7 @@ const updateScore = (postId, voteType, accountId) => {
   return db
     .one(testQuery, { postId, voteType, accountId })
     .then(res => {
-      const postId = res.post_id;
+      const postId = res.postId;
       return selectPostById(postId, accountId);
     })
     .catch(error => {

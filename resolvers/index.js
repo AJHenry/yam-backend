@@ -24,8 +24,8 @@ export const resolvers = {
       return selectAllPosts();
     },
     post: (obj, args, context, info) => {
-      const postId = args.post_id;
-      const voterId = context.user.account_id;
+      const postId = args.postId;
+      const voterId = context.user.accountId;
       return selectPostById(postId, voterId);
     },
     feed: (obj, args, context, info) => {
@@ -43,24 +43,27 @@ export const resolvers = {
     },
     vote: (obj, args, context, info) => {
       console.log(`Mutation:updateScore (args: ${args})`);
-      const accountId = context.user.account_id;
-      const postId = args.post_id;
-      const voteType = args.vote_type;
+      const accountId = context.user.accountId;
+      const postId = args.postId;
+      const voteType = args.voteType;
       return updateScore(postId, voteType, accountId);
     },
   },
   Post: {
-    vote_type: (post, args, context, info) => {
-      return selectVoteType(post.post_id, context.user.account_id);
+    voteType: (post, args, context, info) => {
+      return selectVoteType(post.postId, context.user.accountId);
     },
     location: post => {
-      return selectCoordsByPostId(post.post_id);
+      return selectCoordsByPostId(post.postId);
     },
     comments: post => {
-      return selectCommentsByParentId(post.post_id);
+      return selectCommentsByParentId(post.postId);
     },
-    comment_count: post => {
-      return selectCommentCount(post.post_id);
+    commentCount: post => {
+      return selectCommentCount(post.postId);
+    },
+    isOwner: (post, args, context, info) => {
+      return post.authorId == context.user.accountId;
     },
   },
   Date: new GraphQLScalarType({
