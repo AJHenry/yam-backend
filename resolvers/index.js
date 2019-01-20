@@ -11,6 +11,7 @@ import {
   getFeed,
   selectVoteType,
   selectCommentCount,
+  getFeedByAccountId,
 } from '../database-actions';
 
 export const resolvers = {
@@ -33,6 +34,14 @@ export const resolvers = {
       const { location, radius, offset, count, timestamp } = args;
 
       return getFeed(location, radius, offset, count, timestamp, user);
+    },
+    feedByAccountId: (obj, args, context, info) => {
+      const { user } = context;
+      const { offset, count, accountId } = args;
+
+      const chosenAccountId = accountId ? accountId : user.accountId;
+
+      return getFeedByAccountId(offset, count, chosenAccountId);
     },
   },
   Mutation: {

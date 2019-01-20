@@ -47,7 +47,7 @@ const createUser = deviceId => {
     .func('create_account', { username, deviceId })
     .then(res => {
       console.log(res);
-      const accountId = res[0].create_account;
+      const accountId = res[0].createAccount;
 
       if (accountId != -1) {
         return findUserByAccountId(accountId);

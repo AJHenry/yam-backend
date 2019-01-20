@@ -16,7 +16,7 @@ import {
 } from './post';
 import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
-import { getFeed } from './feed';
+import { getFeed, getFeedByAccountId } from './feed';
 
 export {
   databaseTest,
@@ -32,4 +32,5 @@ export {
   getFeed,
   selectVoteType,
   selectCommentCount,
+  getFeedByAccountId,
 };

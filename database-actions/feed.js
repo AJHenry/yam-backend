@@ -6,16 +6,7 @@ const DEFAULT_COUNT = 50;
 const MAX_COUNT = 200;
 const DEFAULT_OFFSET = 0;
 
-const POST_FIELDS = `post_type as postType,
-content_title as contentTitle,
-content_body as contentBody,
-parent_id as parentId,
-author_id as authorId,
-current_author_name as currentAuthorName,
-current_author_image as currentAuthorImage,
-post_date as postDate,
-post_score as postScore`;
-
+// Used to get a feed of a specific location
 const getFeed = (
   location,
   radius = DEFAULT_RADIUS,
@@ -74,4 +65,41 @@ const getFeed = (
     });
 };
 
-export { getFeed };
+// Used for getting a feed of a single given user
+const getFeedByAccountId = (
+  offset = DEFAULT_OFFSET,
+  count = DEFAULT_COUNT,
+  accountId
+) => {
+  console.log(`db:getFeedByAccountId`);
+
+  if (count > MAX_COUNT) {
+    console.log(`Count too large`);
+    return [];
+  }
+
+  const feedQuery = `select * from post
+  where author_id = $(authorId)
+  order by post_date DESC
+  offset $(offset)
+  limit $(count)
+  `;
+
+  return db
+    .any(feedQuery, {
+      offset,
+      count,
+      accountId,
+    })
+    .then(res => {
+      console.log(res);
+      return res;
+    })
+    .catch(error => {
+      console.log('ERROR:', error); // print error;
+      console.log(error);
+      return [];
+    });
+};
+
+export { getFeed, getFeedByAccountId };

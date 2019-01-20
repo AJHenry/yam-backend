@@ -64,6 +64,7 @@ export const typeDefs = gql`
       count: Int
       timestamp: Date
     ): [Post]!
+    feedByAccountId(offset: Int, count: Int, accountId: Int): [Post]!
   }
 
   type Mutation {
