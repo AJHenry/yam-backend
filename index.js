@@ -13,6 +13,7 @@ import {
   findUserByDeviceId,
   createUser,
 } from './database-actions';
+import { generateData } from './DataGenerate';
 
 const { PORT, JWT_SECRET } = process.env;
 const { Strategy, ExtractJwt } = passportJWT;
@@ -52,6 +53,19 @@ app.use('/graphql', (req, res, next) => {
         message:
           'Must be authorized via /auth before accessing the graphql endpoint',
       });
+    }
+  })(req, res, next);
+});
+
+// Endpoint for checking jwt auth
+app.use('/authcheck', (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    if (user) {
+      console.log(`Auth Check: User authenticated`);
+      res.sendStatus(200);
+    } else {
+      console.log(`Auth Check: User not authenticated`);
+      res.sendStatus(401);
     }
   })(req, res, next);
 });
@@ -130,4 +144,6 @@ app.listen(PORT, () => {
   console.log(
     `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`
   );
+
+  generateData();
 });
