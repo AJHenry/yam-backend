@@ -12,6 +12,8 @@ import {
   selectVoteType,
   selectCommentCount,
   getFeedByAccountId,
+  getCommentFeed,
+  deletePostById,
 } from '../database-actions';
 
 export const resolvers = {
@@ -35,6 +37,12 @@ export const resolvers = {
 
       return getFeed(location, radius, offset, count, timestamp, user);
     },
+    commentFeed: (obj, args, context, info) => {
+      const { user } = context;
+      const { offset, count, timestamp, parentId } = args;
+
+      return getCommentFeed(offset, count, timestamp, parentId, user);
+    },
     feedByAccountId: (obj, args, context, info) => {
       const { user } = context;
       const { offset, count, accountId } = args;
@@ -57,6 +65,12 @@ export const resolvers = {
       const voteType = args.voteType;
       return updateScore(postId, voteType, accountId);
     },
+    deletePost: (obj, args, context, info) => {
+      console.log(`Mutation:deletePost (args: ${args})`);
+      const { user } = context;
+      const { postId } = args;
+      return deletePostById(postId, user.accountId);
+    },
   },
   Post: {
     voteType: (post, args, context, info) => {
@@ -72,7 +86,8 @@ export const resolvers = {
       return selectCommentCount(post.postId);
     },
     isOwner: (post, args, context, info) => {
-      return post.authorId == context.user.accountId;
+      console.log(`Checking ${post.authorId} and ${context.user.accountId}`);
+      return post.authorId === context.user.accountId;
     },
   },
   Date: new GraphQLScalarType({

@@ -14,7 +14,7 @@ const createPost = (args, user) => {
   const roleType = user.roleType;
   const postType = args.postType || 'post';
   const contentTitle = args.contentTitle || null;
-  const contentBody = args.contentBody || '';
+  const contentBody = args.contentBody || null;
   const parentId = args.parentId || null;
   const locationCoords = args.location || null;
 
@@ -24,8 +24,13 @@ const createPost = (args, user) => {
     return null;
   }
 
-  const testQuery = `insert into Post(post_type, content_title, content_body, parent_id, author_id, post_date)
-                    values($(postType), $(contentTitle), $(contentBody), $(parentId), $(authorId), to_timestamp($(postDate))) returning post_id`;
+  if (!contentBody) {
+    console.log(`No content body`);
+    return null;
+  }
+
+  const testQuery = `insert into Post(post_type, content_title, content_body, parent_id, author_id)
+                    values($(postType), $(contentTitle), $(contentBody), $(parentId), $(authorId)) returning post_id`;
 
   return db
     .one(testQuery, {
@@ -34,7 +39,6 @@ const createPost = (args, user) => {
       contentBody,
       parentId,
       authorId,
-      postDate: Date.now() / 1000,
     })
     .then(data => {
       const postId = data.postId;
@@ -61,7 +65,7 @@ const createPost = (args, user) => {
     })
     .catch(error => {
       console.log('ERROR:', error); // print error;
-      return -1;
+      return null;
     });
 };
 
@@ -175,11 +179,11 @@ const deletePostById = (postId, accountId) => {
     .none(testQuery, { postId, authorId: accountId })
     .then(res => {
       //console.log(res);
-      return res;
+      return { postId, message: `Successfully deleted post`, status: true };
     })
     .catch(error => {
       console.log('ERROR:', error); // print error;
-      return null;
+      return { postId: -1, message: `Failed to delete post`, status: false };
     });
 };
 

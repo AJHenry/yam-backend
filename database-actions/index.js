@@ -13,10 +13,11 @@ import {
   updateScore,
   selectVoteType,
   selectCommentCount,
+  deletePostById,
 } from './post';
 import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
-import { getFeed, getFeedByAccountId } from './feed';
+import { getFeed, getFeedByAccountId, getCommentFeed } from './feed';
 
 export {
   databaseTest,
@@ -33,4 +34,6 @@ export {
   selectVoteType,
   selectCommentCount,
   getFeedByAccountId,
+  getCommentFeed,
+  deletePostById,
 };

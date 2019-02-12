@@ -55,7 +55,54 @@ const getFeed = (
     })
     .then(res => {
       console.log(res);
-      console.log(res[0].postDate);
+      //console.log(res[0].postDate);
+      return res;
+    })
+    .catch(error => {
+      console.log('ERROR:', error); // print error;
+      console.log(error);
+      return [];
+    });
+};
+
+// Used to get the comment feed of a parent post
+const getCommentFeed = (
+  offset = DEFAULT_OFFSET,
+  count = DEFAULT_COUNT,
+  timestamp = Date.now(),
+  parentId,
+  userObj
+) => {
+  console.log(`db:getCommentFeed`);
+  if (count > MAX_COUNT) {
+    console.log(`Invalid count given`);
+    return [];
+  }
+
+  if (!parentId) {
+    console.log('No parent ID given');
+  }
+
+  const voterId = userObj.accountId;
+
+  const feedQuery = `select * from post
+  where post_date < to_timestamp($(timestamp))
+  and parent_id = $(parentId)
+  order by post_date DESC
+  offset $(offset)
+  limit $(count)
+  `;
+
+  return db
+    .any(feedQuery, {
+      timestamp: timestamp / 1000,
+      offset,
+      count,
+      parentId,
+    })
+    .then(res => {
+      console.log(res);
+      //console.log(res[0].postDate);
       return res;
     })
     .catch(error => {
@@ -102,4 +149,63 @@ const getFeedByAccountId = (
     });
 };
 
-export { getFeed, getFeedByAccountId };
+// Used to get a feed of a specific location
+const getSubscriptionFeed = (
+  location,
+  radius = DEFAULT_RADIUS,
+  offset = DEFAULT_OFFSET,
+  count = DEFAULT_COUNT,
+  timestamp = Date.now(),
+  userObj
+) => {
+  console.log(`db:getSubscriptionFeed`);
+  if (!location) {
+    console.log(`No location supplied, cannot generate feed`);
+    return [];
+  }
+
+  if (radius > MAX_RADIUS || count > MAX_COUNT) {
+    console.log(`Invalid parameters given`);
+    return [];
+  }
+
+  const voterId = userObj.accountId;
+  const lon = location.longitude;
+  const lat = location.latitude;
+
+  const feedQuery = `select * from post
+  where post_id in (
+      select post_id
+      from post_coords
+      where ST_Distance_Sphere(loc_data::geometry, ST_MakePoint($(lon), $(lat))) <= $(radius) * 1609.34
+  )
+  and post_date < to_timestamp($(timestamp))
+  and parent_id is null
+  order by post_date DESC
+  offset $(offset)
+  limit $(count)
+  `;
+
+  return db
+    .any(feedQuery, {
+      voterId,
+      lon,
+      lat,
+      radius,
+      timestamp: timestamp / 1000,
+      offset,
+      count,
+    })
+    .then(res => {
+      console.log(res);
+      console.log(res[0].postDate);
+      return res;
+    })
+    .catch(error => {
+      console.log('ERROR:', error); // print error;
+      console.log(error);
+      return [];
+    });
+};
+
+export { getFeed, getFeedByAccountId, getSubscriptionFeed, getCommentFeed };

@@ -5,6 +5,12 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 export const typeDefs = gql`
   scalar Date
 
+  type DeletePost {
+    postId: Int!
+    status: Boolean!
+    message: String!
+  }
+
   type Post {
     postId: Int!
     postType: String!
@@ -64,6 +70,12 @@ export const typeDefs = gql`
       count: Int
       timestamp: Date
     ): [Post]!
+    commentFeed(
+      offset: Int
+      count: Int
+      timestamp: Date
+      parentId: Int
+    ): [Post]!
     feedByAccountId(offset: Int, count: Int, accountId: Int): [Post]!
   }
 
@@ -74,7 +86,8 @@ export const typeDefs = gql`
       contentBody: String
       parentId: Int
       location: GeoPositionInput!
-    ): Post!
+    ): Post
+    deletePost(postId: Int!): DeletePost!
     vote(postId: Int!, voteType: String): Post!
   }
 `;
