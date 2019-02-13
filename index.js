@@ -145,5 +145,5 @@ app.listen(PORT, () => {
     `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`
   );
 
-  generateData();
+  //generateData();
 });
