@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"No Tests Yet\"",
-    "start": "nodemon ./index.js --exec babel-node -e js"
+    "start": "node ./index.js --exec babel-node -e js",
+    "watch": "nodemon ./index.js --exec babel-node -e js"
   },
   "husky": {
     "hooks": {
@@ -39,7 +40,10 @@
     "nodemon": "^1.18.10",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
-    "pg-promise": "^8.5.4"
+    "pg-promise": "^8.5.4",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
