@@ -42,6 +42,13 @@ This will start the server in development mode, which you will be greeted with t
 Successfully connected to DB
 ```
 
+## Deploying to GCP
+
+We are using GCP with App Engine and SQL to host our application
+We also use Cloud Build and Triggers for CD
+
+Check out [The Google KMS docs](https://cloud.google.com/cloud-build/docs/securing-builds/use-encrypted-secrets-credentials) for more information about using env secrets
+
 ## Endpoint documention
 
 ```

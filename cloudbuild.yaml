@@ -4,5 +4,15 @@ steps:
   - name: 'gcr.io/cloud-builders/npm'
     args: ['test']
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['app', 'deploy']
+
+    args:
+      - kms
+      - decrypt
+      - --ciphertext-file=.env.enc
+      - --plaintext-file=.env
+      - --location=global
+      - --keyring=yam-dev
+      - --key=yam-dev-key
+      - app
+      - deploy
 timeout: '1600s'
