@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"No Tests Yet\"",
-    "start": "node ./index.js --exec babel-node -e js",
-    "watch": "nodemon ./index.js --exec babel-node -e js"
+    "start": "nodemon ./index.js --exec babel-node -e js"
   },
   "husky": {
     "hooks": {
