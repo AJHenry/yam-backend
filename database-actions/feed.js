@@ -126,7 +126,7 @@ const getFeedByAccountId = (
   }
 
   const feedQuery = `select * from post
-  where author_id = $(authorId)
+  where author_id = $(accountId)
   order by post_date DESC
   offset $(offset)
   limit $(count)
