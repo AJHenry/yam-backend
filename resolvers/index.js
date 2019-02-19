@@ -14,6 +14,7 @@ import {
   getFeedByAccountId,
   getCommentFeed,
   deletePostById,
+  getResourcesByPostId,
 } from '../database-actions';
 
 export const resolvers = {
@@ -25,6 +26,11 @@ export const resolvers = {
     allPosts: () => {
       console.log(`Query:selectAllPosts`);
       return selectAllPosts();
+    },
+    resources: (obj, args, context, info) => {
+      const postId = obj.postId;
+      const accountId = context.user.accountId;
+      return getResourcesByPostId(postId);
     },
     post: (obj, args, context, info) => {
       const postId = args.postId;
@@ -73,6 +79,9 @@ export const resolvers = {
     },
   },
   Post: {
+    _id: (post, args, context, info) => {
+      return post.postId;
+    },
     voteType: (post, args, context, info) => {
       return selectVoteType(post.postId, context.user.accountId);
     },
@@ -88,6 +97,19 @@ export const resolvers = {
     isOwner: (post, args, context, info) => {
       console.log(`Checking ${post.authorId} and ${context.user.accountId}`);
       return post.authorId === context.user.accountId;
+    },
+    resources: (post, args, context, info) => {
+      return getResourcesByPostId(post.postId);
+    },
+  },
+  Resource: {
+    _id: (resource, args, context, info) => {
+      return resource.resourceId;
+    },
+  },
+  DeletePost: {
+    _id: (post, args, context, info) => {
+      return post.postId;
     },
   },
   Date: new GraphQLScalarType({

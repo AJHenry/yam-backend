@@ -19,6 +19,8 @@ import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
 import { getFeed, getFeedByAccountId, getCommentFeed } from './feed';
 
+import { getResourcesByPostId } from './resources';
+
 export {
   databaseTest,
   createPost,
@@ -36,4 +38,5 @@ export {
   getFeedByAccountId,
   getCommentFeed,
   deletePostById,
+  getResourcesByPostId,
 };

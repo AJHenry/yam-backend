@@ -6,12 +6,14 @@ export const typeDefs = gql`
   scalar Date
 
   type DeletePost {
+    _id: Int!
     postId: Int!
     status: Boolean!
     message: String!
   }
 
   type Post {
+    _id: Int!
     postId: Int!
     postType: String!
     contentTitle: String
@@ -27,13 +29,18 @@ export const typeDefs = gql`
     comments: [Post]
     commentCount: Int
     isOwner: Boolean!
+    resources: [Resource]!
   }
 
   type Resource {
+    _id: Int!
     resourceId: Int!
     postId: Int!
     resourceType: String!
     resourceUrl: String!
+    title: String
+    width: Int!
+    height: Int!
   }
 
   type GeoPosition {
@@ -62,6 +69,7 @@ export const typeDefs = gql`
   type Query {
     databaseStatus: String
     allPosts: [Post]!
+    resources(postId: Int!): [Resource]!
     post(postId: Int!): Post
     feed(
       location: GeoPositionInput!
