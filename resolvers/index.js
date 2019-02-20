@@ -15,7 +15,12 @@ import {
   getCommentFeed,
   deletePostById,
   getResourcesByPostId,
+  createResource,
 } from '../database-actions';
+import nanoid from 'nanoid';
+import { uploadStream } from '../cloud/s3Upload';
+
+import fs from 'fs';
 
 export const resolvers = {
   Query: {
@@ -59,10 +64,61 @@ export const resolvers = {
     },
   },
   Mutation: {
-    post: (obj, args, context, info) => {
+    post: async (obj, args, context, info) => {
       console.log(`Mutation:post (args: ${args})`);
       const { user } = context;
-      return createPost(args, user);
+      const { resource } = args;
+      console.log(`resource`);
+      console.log(resource);
+
+      const newPost = await createPost(args, user);
+      console.log(newPost);
+
+      // Initiate a file upload if there is one
+      if (newPost && resource) {
+        console.log('initiating file upload');
+
+        const { height, width, file, title, fileType } = resource;
+        const { createReadStream, filename, mimetype, encoding } = await file;
+        const { postId } = newPost;
+        const stream = createReadStream();
+        console.log(filename);
+        const keyName = nanoid(64);
+        const { writeStream, promise } = uploadStream({
+          Key: keyName,
+        });
+
+        stream.pipe(writeStream);
+        return promise
+          .then(async data => {
+            console.log(data);
+            const url = data.Location;
+            const res = await createResource(
+              postId,
+              url,
+              width,
+              height,
+              keyName,
+              title,
+              fileType
+            );
+
+            if (!res) {
+              console.log(`Error with inserting image`);
+              await deletePostById(postId);
+              return null;
+            } else {
+              return { ...newPost, resources: [res] };
+            }
+          })
+          .catch(async err => {
+            console.log(`err: ${err}`);
+            await deletePostById(postId);
+            return null;
+          });
+      }
+
+      return { ...newPost, resources: null };
     },
     vote: (obj, args, context, info) => {
       console.log(`Mutation:updateScore (args: ${args})`);

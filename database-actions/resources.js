@@ -28,4 +28,45 @@ const getResourcesByPostId = postId => {
     });
 };
 
-export { getResourcesByPostId };
+// Used to store resources for posts
+const createResource = (
+  postId,
+  url,
+  width,
+  height,
+  keyName,
+  title = null,
+  resourceType = 'image'
+) => {
+  console.log(`db:createResource`);
+  if (!postId) {
+    console.log(`No post id supplied, cannot create resource`);
+    return null;
+  }
+
+  const resourceInsert = `insert into resources(post_id, resource_type, resource_url, key_name, title, width, height)
+  values($(postId), $(resourceType), $(url), $(keyName), $(title), $(width), $(height)) returning *
+  `;
+
+  return db
+    .one(resourceInsert, {
+      postId,
+      resourceType,
+      url,
+      keyName,
+      title,
+      width,
+      height,
+    })
+    .then(res => {
+      console.log(res);
+      return res;
+    })
+    .catch(error => {
+      console.log('ERROR:', error); // print error;
+      console.log(error);
+      return null;
+    });
+};
+
+export { getResourcesByPostId, createResource };

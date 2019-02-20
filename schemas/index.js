@@ -38,6 +38,7 @@ export const typeDefs = gql`
     postId: Int!
     resourceType: String!
     resourceUrl: String!
+    keyName: String!
     title: String
     width: Int!
     height: Int!
@@ -46,6 +47,14 @@ export const typeDefs = gql`
   type GeoPosition {
     latitude: Float!
     longitude: Float!
+  }
+
+  input ResourceUpload {
+    file: Upload!
+    title: String
+    width: Int!
+    height: Int!
+    fileType: String
   }
 
   input GeoPositionInput {
@@ -94,8 +103,10 @@ export const typeDefs = gql`
       contentBody: String
       parentId: Int
       location: GeoPositionInput!
+      resource: ResourceUpload
     ): Post
     deletePost(postId: Int!): DeletePost!
     vote(postId: Int!, voteType: String): Post!
+    createResource(postId: Int!, resource: Upload!): Resource
   }
 `;
