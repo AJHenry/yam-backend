@@ -44,9 +44,20 @@ export const typeDefs = gql`
     height: Int!
   }
 
+  type LatLon {
+    latitude: Float!
+    longitude: Float!
+  }
+
   type GeoPosition {
     latitude: Float!
     longitude: Float!
+    details: Address!
+  }
+
+  type Address {
+    cityName: String!
+    cityState: String!
   }
 
   input ResourceUpload {
@@ -64,15 +75,8 @@ export const typeDefs = gql`
   }
 
   input AddressInput {
-    latitude: Float!
-    longitude: Float!
-    altitude: Float
-  }
-
-  input Address {
-    latitude: Float!
-    longitude: Float!
-    altitude: Float
+    cityName: String!
+    cityState: String!
   }
 
   type Query {
@@ -103,6 +107,7 @@ export const typeDefs = gql`
       contentBody: String
       parentId: Int
       location: GeoPositionInput!
+      address: AddressInput
       resource: ResourceUpload
     ): Post
     deletePost(postId: Int!): DeletePost!

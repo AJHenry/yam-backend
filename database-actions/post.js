@@ -7,7 +7,7 @@
 import { psql as db } from '../config/psqlAdapter'; // our adapter from psqlAdapter.js
 
 // Creates a post by inserting into Post and post_coords
-const createPost = (args, user) => {
+const createPost = async (args, user) => {
   console.log(`Args: ${args}`);
   console.log(`User: ${user}`);
   const authorId = user.accountId;
@@ -17,72 +17,164 @@ const createPost = (args, user) => {
   const contentBody = args.contentBody || null;
   const parentId = args.parentId || null;
   const locationCoords = args.location || null;
+  const address = args.address;
 
   // Error if there's no parent and no post coords
-  if (!locationCoords && !parentId) {
-    console.log(`Failed to include parentId and locationCoords`);
+  if (!locationCoords) {
+    console.log(`Failed to include locationCoords`);
     return null;
   }
 
-  if (!contentBody) {
-    console.log(`No content body`);
+  if (!contentBody || contentBody.length < 3) {
+    console.log(`No/short content body`);
     return null;
   }
 
-  const testQuery = `insert into Post(post_type, content_title, content_body, parent_id, author_id)
-                    values($(postType), $(contentTitle), $(contentBody), $(parentId), $(authorId)) returning post_id`;
+  // First let's insert the post data
+  const postInsert = `insert into Post(post_type, content_title, content_body, parent_id, author_id, post_date)
+                    values($(postType), $(contentTitle), $(contentBody), $(parentId), $(authorId), to_timestamp($(timestamp))) returning *`;
 
-  return db
-    .one(testQuery, {
+  const postStatus = await db
+    .one(postInsert, {
       postType,
       contentTitle,
       contentBody,
       parentId,
       authorId,
+      timestamp: Date.now() / 1000.0,
     })
-    .then(data => {
-      const postId = data.postId;
-      const lat = locationCoords.latitude;
-      const lon = locationCoords.longitude;
-      const selectQuery = `insert into post_coords(post_id, loc_data)
-                          values($(postId), ST_SetSRID(ST_MakePoint($(lon), $(lat)), 4326))`;
-      return db
-        .none(selectQuery, {
-          postId,
-          lon,
-          lat,
-        })
-        .then(res => {
-          console.log(`Successfully inserted post with coords`);
-          return selectPostById(postId, authorId);
-        })
-        .catch(err => {
-          console.log(`Error inserting post coords for postId: ${postId}`);
-          console.log(err);
-          deletePostById(postId, authorId);
-          return null;
-        });
+    .then(post => {
+      console.log(post);
+      return post;
     })
     .catch(error => {
       console.log('ERROR:', error); // print error;
+      return null;
+    });
+
+  // Make sure that it passed
+  if (!postStatus) {
+    console.log(`Failed to insert post`);
+    return null;
+  }
+
+  console.log(`Successfully inserted post data`);
+
+  // Now lets insert post coords
+  const postId = postStatus.postId;
+  const lat = locationCoords.latitude;
+  const lon = locationCoords.longitude;
+  const postCoordsInsert = `insert into post_coords(post_id, loc_data)
+                        values($(postId), ST_SetSRID(ST_MakePoint($(lon), $(lat)), 4326)) returning *, 
+                        ST_X(loc_data::geometry) AS longitude,
+                        ST_Y(loc_data::geometry) AS latitude`;
+  const postCoordsStatus = await db
+    .one(postCoordsInsert, {
+      postId,
+      lon,
+      lat,
+    })
+    .then(postCoords => {
+      console.log(`postCoords`);
+      return postCoords;
+    })
+    .catch(err => {
+      console.log(`Error inserting post coords for postId: ${postId}`);
+      console.log(err);
+      return null;
+    });
+
+  // Make sure it passed
+  if (!postCoordsStatus) {
+    console.log(`Failed to insert post`);
+    return null;
+  }
+
+  console.log(`Successfully inserted post coords data`);
+
+  // If there's no address, don't bother
+  if (!address) {
+    console.log(`No address given`);
+    return { ...post, GeoPosition: { ...postCoords } };
+  }
+
+  // There's an address, lets insert it
+  const { postCoordsId } = postCoordsStatus;
+  const { cityName, cityState } = address;
+  const addressStatus = await insertAddress(postCoordsId, cityName, cityState);
+  if (!addressStatus) {
+    console.log(
+      `Error inserting address for: postId: ${postId} with postCoordsId: ${postCoordsId}`
+    );
+    console.log(err);
+    deletePostById(postId, authorId);
+    return null;
+  }
+  console.log(addressStatus);
+  return {
+    ...postStatus,
+    location: {
+      ...postCoordsStatus,
+      details: { ...addressStatus },
+    },
+  };
+};
+
+const insertAddress = (postCoordsId, cityName, cityState) => {
+  console.log(`dbPost: insertAddress`);
+  const addressInsert = `insert into address(post_coords_id, city_name, city_state)
+                          values($(postCoordsId), $(cityName), $(cityState)) returning *`;
+  return db
+    .one(addressInsert, {
+      postCoordsId,
+      cityName,
+      cityState,
+    })
+    .then(res => {
+      console.log(`Successfully inserted address`);
+      return res;
+    })
+    .catch(err => {
+      console.log(err);
+      return null;
+    });
+};
+
+// Gets an address for a given location point
+const getAddressByCoordsId = postCoordsId => {
+  console.log(`dbPost: getAddressByCoordsId`);
+  const addressSelect = `select * 
+  from address
+  where post_coords_id = $(postCoordsId)`;
+
+  return db
+    .one(addressSelect, {
+      postCoordsId,
+    })
+    .then(res => {
+      console.log(res);
+      return res;
+    })
+    .catch(err => {
+      console.log(err);
       return null;
     });
 };
 
 // Returns all posts, dangerous!
 const selectAllPosts = () => {
-  const testQuery = `select ${POST_FIELDS}
+  const testQuery = `select *
   from post`;
 
   return db
     .any(testQuery)
     .then(res => {
-      //console.log(res); // print new user id;
+      //console.log(res);
       return res;
     })
     .catch(error => {
       console.log('ERROR:', error); // print error;
-      return -1;
+      return [];
     });
 };
 
@@ -124,7 +216,8 @@ const selectVoteType = (postId, voterId) => {
 // Gets a coordinate for a post by its ID
 const selectCoordsByPostId = postId => {
   console.log(`db:selectCoordsByPostId`);
-  const testQuery = `select ST_X(loc_data::geometry) AS longitude,
+  const testQuery = `select *, 
+                            ST_X(loc_data::geometry) AS longitude,
                             ST_Y(loc_data::geometry) AS latitude
                             from post_coords where post_id = $(postId)`;
   return db
@@ -217,4 +310,5 @@ export {
   updateScore,
   selectVoteType,
   selectCommentCount,
+  getAddressByCoordsId,
 };

@@ -14,6 +14,7 @@ import {
   selectVoteType,
   selectCommentCount,
   deletePostById,
+  getAddressByCoordsId,
 } from './post';
 import { findUserByDeviceId, findUserByAccountId, createUser } from './account';
 import { databaseTest } from './test';
@@ -40,4 +41,5 @@ export {
   deletePostById,
   getResourcesByPostId,
   createResource,
+  getAddressByCoordsId,
 };

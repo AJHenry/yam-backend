@@ -16,6 +16,7 @@ import {
   deletePostById,
   getResourcesByPostId,
   createResource,
+  getAddressByCoordsId,
 } from '../database-actions';
 import nanoid from 'nanoid';
 import { uploadStream } from '../cloud/s3Upload';
@@ -156,6 +157,13 @@ export const resolvers = {
     },
     resources: (post, args, context, info) => {
       return getResourcesByPostId(post.postId);
+    },
+  },
+  GeoPosition: {
+    details: (address, args, context, info) => {
+      console.log('called geopostions');
+      console.log(address);
+      return getAddressByCoordsId(address.postCoordsId);
     },
   },
   Resource: {
